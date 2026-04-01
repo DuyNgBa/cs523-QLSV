@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý sinh viên bằng B-Tree</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=6">
+</head>
+<body>
+    <div class="page">
+        <header class="hero">
+            <div>
+                <p class="badge">CS523 - Quản lý sinh viên</p>
+                <h1>Ứng dụng quản lý sinh viên</h1>
+                <p class="hero-text">
+                    Dữ liệu được lưu trên Supabase, còn chỉ mục được biểu diễn bằng B-Tree để phục vụ tìm kiếm và trực quan hóa.
+                </p>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('home')">Home</button>
+            <button class="tab-btn" onclick="switchTab('visualize')">Visualize</button>
+        </div>
+
+        <div id="tab-home" class="tab-content active">
+            <div class="grid">
+                <section class="card">
+                    <h2>Thêm sinh viên</h2>
+                    <div class="form-grid">
+                        <input id="mssv" placeholder="MSSV (tối đa 4 ký tự)">
+                        <input id="ho_ten" placeholder="Họ và tên">
+
+                        <select id="gioi_tinh">
+                            <option value="">-- Chọn giới tính --</option>
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                        </select>
+
+                        <input id="ngay_sinh" type="date">
+                        <input id="que_quan" placeholder="Quê quán">
+
+                        <select id="Khoa">
+                            <option value="">-- Chọn khoa --</option>
+                            <option value="Khoa học máy tính">Khoa học máy tính</option>
+                            <option value="Kĩ thuật máy tính">Kĩ thuật máy tính</option>
+                            <option value="Công nghệ phần mềm">Công nghệ phần mềm</option>
+                            <option value="Mạng máy tính và truyền thông">Mạng máy tính và truyền thông</option>
+                            <option value="Hệ thống thông tin">Hệ thống thông tin</option>
+                        </select>
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn primary" onclick="addStudent()">Thêm sinh viên</button>
+                        <button class="btn secondary" onclick="loadState()">Làm mới</button>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <h2>Xóa sinh viên</h2>
+                    <div class="inline-form">
+                        <input id="delete_mssv" placeholder="Nhập MSSV cần xóa">
+                        <button class="btn danger" onclick="deleteStudent()">Xóa</button>
+                    </div>
+
+                    <h2 class="mt">Tìm kiếm</h2>
+                    <div class="inline-form">
+                        <input id="find_mssv" placeholder="Tìm theo MSSV">
+                        <button class="btn primary" onclick="findByMssv()">Tìm MSSV</button>
+                    </div>
+
+                    <div class="inline-form">
+                        <input id="find_name" placeholder="Tìm theo Họ và tên">
+                        <button class="btn primary" onclick="findByName()">Tìm Họ tên</button>
+                    </div>
+
+                    <div id="search_result" class="result-box">
+                        Chưa có kết quả tìm kiếm.
+                    </div>
+                </section>
+            </div>
+
+            <div id="message" class="message"></div>
+
+            <section class="card">
+                <div class="section-header">
+                    <h2>Danh sách sinh viên đã được insert</h2>
+                    <span id="student_count" class="count-badge">0 sinh viên</span>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>MSSV</th>
+                                <th>Họ và tên</th>
+                                <th>Giới tính</th>
+                                <th>Ngày sinh</th>
+                                <th>Quê quán</th>
+                                <th>Khoa</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student_table_body"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <div id="tab-visualize" class="tab-content">
+            <section class="card">
+                <div class="visual-header">
+                    <h2>Visualize index B-Tree theo MSSV</h2>
+                    <div class="visual-search-box">
+                        <input id="trace_mssv_input" placeholder="Nhập MSSV để mô phỏng tìm kiếm">
+                        <button class="btn primary" onclick="traceSearchMssv()">Visualize search</button>
+                        <button class="btn secondary" onclick="clearTrace('mssv_tree', 'mssv_trace_steps', 'mssv_trace_result')">Xóa hiệu ứng</button>
+                    </div>
+                </div>
+
+                <div id="mssv_trace_result" class="trace-result">Chưa thực hiện mô phỏng tìm kiếm.</div>
+                <div id="mssv_tree" class="tree-board"></div>
+                <div id="mssv_trace_steps" class="trace-steps"></div>
+            </section>
+
+            <section class="card">
+                <div class="visual-header">
+                    <h2>Visualize index B-Tree theo Họ tên</h2>
+                    <div class="visual-search-box">
+                        <input id="trace_name_input" placeholder="Nhập họ tên để mô phỏng tìm kiếm">
+                        <button class="btn primary" onclick="traceSearchName()">Visualize search</button>
+                        <button class="btn secondary" onclick="clearTrace('name_tree', 'name_trace_steps', 'name_trace_result')">Xóa hiệu ứng</button>
+                    </div>
+                </div>
+
+                <div id="name_trace_result" class="trace-result">Chưa thực hiện mô phỏng tìm kiếm.</div>
+                <div id="name_tree" class="tree-board"></div>
+                <div id="name_trace_steps" class="trace-steps"></div>
+            </section>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}?v=6"></script>
+</body>
+</html>
