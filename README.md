@@ -1,5 +1,4 @@
-## Họ và tên: Ngô Bá Duy
-## MSSV: 24520382
+## Ứng dụng quảng lí sinh viên
 
 ## 1. Cấu trúc project bao gồm
 
